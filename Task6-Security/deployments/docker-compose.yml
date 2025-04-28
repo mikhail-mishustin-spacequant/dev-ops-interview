@@ -1,0 +1,43 @@
+# Vulnerable docker-compose configuration with multiple security issues
+
+version: '3'
+
+services:
+  # Security Issue #1: No health checks configured
+  web:
+    build: ..
+    # Security Issue #2: Exposing too many ports
+    ports:
+      - "8080:8080"
+      - "22:22"
+      - "3306:3306"
+    # Security Issue #3: No resource limits set
+    # Security Issue #4: Hardcoded credentials in environment
+    environment:
+      - DB_USER=admin
+      - DB_PASSWORD=super_secret_password123
+      - API_KEY=1234567890abcdef
+    # Security Issue #5: No proper networks configured
+    # Security Issue #6: Using privileged mode
+    privileged: true
+    # Security Issue #7: Mounting sensitive host directories
+    volumes:
+      - /:/host-root:rw
+      - ./app:/app
+    # Security Issue #8: No restart policy defined
+
+  # Security Issue #9: Database with no authentication
+  db:
+    image: mysql:5.7
+    environment:
+      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+      - MYSQL_DATABASE=app_db
+    ports:
+      - "3306:3306"
+    volumes:
+      - db-data:/var/lib/mysql
+    # Security Issue #10: No network isolation
+
+volumes:
+  db-data:
+    driver: local
